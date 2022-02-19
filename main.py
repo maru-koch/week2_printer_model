@@ -2,15 +2,22 @@
 from modules.printer import Printer
 
 class Main():
-    on = False
-    
+
     def start():
         on = True
         while on:
             Printer.start(Printer)
             cost, amount = Printer.processPrice(Printer)
-            Printer.checkTransaction(Printer, cost, amount)
-            on = False
+
+            status = Printer.checkTransaction(Printer, cost, amount)
+            response = Printer.transactionStatus(Printer, status)
+
+            if response == 'y':
+                Printer.addFund(Printer, status)
+            else:
+                msg = Printer.exit(Printer)
+                print(msg)
+                break
             
     def stop(self):
         self.on = False

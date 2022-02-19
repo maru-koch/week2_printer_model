@@ -7,16 +7,13 @@ class Printer(object):
     pages = 0
     mode = ''
     number = 0
+    amount = 0
     ink_consumable = 0
     cost = 0
     ink = resources['ink']
     paper = resources['paper']
     profit = resources['profit']
 
-    # def __init__(self):
-    #     self.ink = resources['ink']
-    #     self.paper = resources['paper']
-    #     self.profit = resources['profit']
 
     def start(self):
         try:
@@ -38,46 +35,58 @@ class Printer(object):
         except ValueError:
             print('Incorrect Value')
 
-        
-    def checkMode(self, mode):
-        if mode == 'coloured':
-            print_format = FORMAT['coloured']
-        elif mode == 'greyscaled':
-            print_format = FORMAT['greyscaled']
-        return print_format
 
     def printDocument(self):
+        print("REPORT -- BEFORE")
+        report = self.generateReport(Printer)
+        print(report)
         self.processDocument(Printer)
         self.printing(Printer)
+        print("REPORT -- AFTER")
+        report = self.generateReport(Printer)
+        print(report)
        
     def displayCost(self):
         cost = FORMAT[self.mode]['price'] * self.pages
         print(f" \n\t    MODE: {self.mode}  \n\t    PAGES: {self.pages} \n\t    COST: ${cost}")
         
-
     def processDocument(self):
-        self.ink - self.ink_consumable 
-        self.paper - self.pages
+        resources['ink'] - self.ink_consumable 
+        resources['paper'] - self.pages
         self.profit += self.cost
 
-    # def rejectDocument():
-    #     print("Document rejected")
-
-
     def processPrice(self) -> int:
+        print("Processing price")
         cost = FORMAT[self.mode]['price'] * self.pages
         amountEntered = coins[self.coin] * self.number
         self.cost = cost
+        self.amount = amountEntered
         return cost, amountEntered
 
     def checkTransaction(self, cost, amountEntered):
         if cost > amountEntered:
-            return "Insufficient funds"
-        elif amountEntered == cost:
-            return True
+            return False
         else:
-            print(Printer.balance(amountEntered, cost))
             return True
+
+    def transactionStatus(self, status):
+        """
+        if status is false, then cost is greater the amount entered
+        """
+        if status:
+            self.printDocument(Printer)
+        else:
+            return input("Insufficient Fund. Would like to add more fund? y/n   ")
+    
+    def addFund(self, status):
+        while status == False:
+            self.coin = input(f"Please Insert More coins... (Penny, Nickel, Dime, or Quarter) - remaining ${self.cost - self.amount}: ")
+            self.number = int(input("Enter Number of coins: "))
+            self.amount += coins[self.coin] * self.number
+            status = Printer.checkTransaction(Printer, self.cost, self.amount)
+        else:
+            self.printDocument(Printer)
+        
 
     def balance(amountEntered, cost):
         balance = amountEntered - cost
@@ -90,21 +99,22 @@ class Printer(object):
         """
         available_ink = self.ink
         avalaible_paper = self.paper
-        ink = FORMAT[mode]['materials']['ink'] * pages
-        if ink > available_ink:
+        self.ink_consumable = FORMAT[mode]['materials']['ink'] * pages
+
+        if self.ink_consumable > available_ink:
             print("Insufficient Ink")
         elif pages > avalaible_paper:
             ("Insufficient Paper")
         else:
             return True
         
-
     def printing(self):
+        time.sleep(1)
         pages = self.pages
         while pages:
             timeformat = '{}'.format(pages)
             print("\tPrinting... ", timeformat, end='\r')
-            time.sleep(0.15)
+            time.sleep(0.2)
             pages -= 1
             
     def increaseProfit(self, price: int) -> int:
@@ -117,7 +127,10 @@ class Printer(object):
     def exitMsg(self):
         return "Here is your report. Thank you for using our services"
 
+    def exit(self):
+        print("Exiting... ")
+        time.sleep(1)
+        return "Printing Aborted"
+
 class InsufficientResourcesException(Exception):
     pass
-# P1 = Printer()
-# P1.checkAvailableResources(Printer, "greyscale", "10")
