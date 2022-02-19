@@ -24,16 +24,16 @@ class Printer(object):
             self.pages = int(input("How many pages would like to print: "))
             cost = FORMAT[self.mode]['price'] * self.pages
             print(f" \n\t    MODE: {self.mode}  \n\t    PAGES: {self.pages} \n\t    COST: ${cost}")
-            Printer.checkAvailableResources(self, self.mode, self.pages)
-            # if isResource:
-            #     response = input("Proceed? y/n  ")
-            #     if response == 'y':
-            #         self.coin = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter): ").islower()
-            #         self.number = int(input("Enter Number of coins: "))
-            #     else:
-            #         self.start()
-            # else:
-            #     "Insufficient Ink or Paper"
+            isResource = Printer.checkAvailableResources(self, self.mode, self.pages)
+            if isResource:
+                response = input("Proceed? y/n  ")
+                if response == 'y':
+                    self.coin = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter): ").islower()
+                    self.number = int(input("Enter Number of coins: "))
+                else:
+                    self.start()
+            else:
+                "Insufficient Ink or Paper"
 
         except ValueError:
             print('Incorrect Value')
