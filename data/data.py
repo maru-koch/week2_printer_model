@@ -19,7 +19,7 @@ FORMAT = {
 
 
 resources = {
-    'ink': 500,
-    'paper': 100,
-    'profit': 0
+    'ink': 500, #ml
+    'paper': 100, #pc
+    'profit': 0 #dollar
 }
