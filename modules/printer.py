@@ -22,16 +22,16 @@ class Printer(object):
         try:
             self.mode = input("What format would you like? greyscale or coloured: ")
             self.pages = int(input("How many pages would like to print: "))
-            cost = FORMAT[self.mode]['price'] * self.pages
-            print(f" \n\t    MODE: {self.mode}  \n\t    PAGES: {self.pages} \n\t    COST: ${cost}")
+            Printer.displayCost(Printer)
             isResource = Printer.checkAvailableResources(self, self.mode, self.pages)
             if isResource:
                 response = input("Proceed? y/n  ")
                 if response == 'y':
-                    self.coin = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter): ").islower()
+                    self.coin = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter): ")
                     self.number = int(input("Enter Number of coins: "))
+                    pass
                 else:
-                    self.start()
+                    self.start(Printer)
             else:
                 "Insufficient Ink or Paper"
 
@@ -52,7 +52,7 @@ class Printer(object):
        
     def displayCost(self):
         cost = FORMAT[self.mode]['price'] * self.pages
-        print(f" \n\t    MODE: {self.mode}  \n\t    PAGES: {self.pages} \n\t    COST: ${cost} ")
+        print(f" \n\t    MODE: {self.mode}  \n\t    PAGES: {self.pages} \n\t    COST: ${cost}")
         
 
     def processDocument(self):
@@ -66,8 +66,7 @@ class Printer(object):
 
     def processPrice(self) -> int:
         cost = FORMAT[self.mode]['price'] * self.pages
-        print(self.coin)
-        amountEntered = coins['dime'] * self.number
+        amountEntered = coins[self.coin] * self.number
         self.cost = cost
         return cost, amountEntered
 
@@ -93,9 +92,9 @@ class Printer(object):
         avalaible_paper = self.paper
         ink = FORMAT[mode]['materials']['ink'] * pages
         if ink > available_ink:
-            "Insufficient Ink"
+            print("Insufficient Ink")
         elif pages > avalaible_paper:
-            "Insufficient Paper"
+            ("Insufficient Paper")
         else:
             return True
         
@@ -108,8 +107,6 @@ class Printer(object):
             time.sleep(0.15)
             pages -= 1
             
-        
-
     def increaseProfit(self, price: int) -> int:
         self.profit += price
     
@@ -122,3 +119,5 @@ class Printer(object):
 
 class InsufficientResourcesException(Exception):
     pass
+# P1 = Printer()
+# P1.checkAvailableResources(Printer, "greyscale", "10")

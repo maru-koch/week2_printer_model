@@ -7,10 +7,10 @@ class Main():
     def start():
         on = True
         while on:
-            if Printer.start(Printer):
-                Printer.generateReport(Printer)
-                Printer.printDocument(Printer)
-                Printer.generateReport(Printer)
+            Printer.start(Printer)
+            cost, amount = Printer.processPrice(Printer)
+            Printer.checkTransaction(Printer, cost, amount)
+            on = False
             
     def stop(self):
         self.on = False
