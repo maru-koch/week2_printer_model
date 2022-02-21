@@ -2,135 +2,173 @@
 from data.data import FORMAT, resources, coins
 import time
 
-class Printer(object):
-    coin = ''
-    pages = 0
-    mode = ''
-    number = 0
-    amount = 0
-    ink_consumable = 0
-    cost = 0
-    ink = resources['ink']
-    paper = resources['paper']
-    profit = resources['profit']
 
-
-    def start(self):
-        try:
-            self.mode = input("What format would you like? greyscale or coloured: ")
-            self.pages = int(input("How many pages would like to print: "))
-            Printer.displayCost(Printer)
-            isResource = Printer.checkAvailableResources(self, self.mode, self.pages)
-            if isResource:
-                response = input("Proceed? y/n  ")
-                if response == 'y':
-                    self.coin = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter): ")
-                    self.number = int(input("Enter Number of coins: "))
-                    pass
-                else:
-                    self.start(Printer)
-            else:
-                "Insufficient Ink or Paper"
-
-        except ValueError:
-            print('Incorrect Value')
-
-
-    def printDocument(self):
-        print("REPORT -- BEFORE")
-        report = self.generateReport(Printer)
-        print(report)
-        self.processDocument(Printer)
-        self.printing(Printer)
-        print("REPORT -- AFTER")
-        report = self.generateReport(Printer)
-        print(report)
-       
-    def displayCost(self):
-        cost = FORMAT[self.mode]['price'] * self.pages
-        print(f" \n\t    MODE: {self.mode}  \n\t    PAGES: {self.pages} \n\t    COST: ${cost}")
+class Printer():
+    power = True
+    def __init__(self,paper,ink,profit):
+        self.paper = paper
+        self.ink = ink
+        self.profit = profit
+        self.coin = ''
+        self.pages = 0
+        self.mode = ''
+        self.number = 0
         
-    def processDocument(self):
-        resources['ink'] - self.ink_consumable 
-        resources['paper'] - self.pages
-        self.profit += self.cost
+        self.amount = 0
+        self.ink_consumable = 0
+        self.cost = 0
 
-    def processPrice(self) -> int:
-        print("Processing price")
-        cost = FORMAT[self.mode]['price'] * self.pages
-        amountEntered = coins[self.coin] * self.number
-        self.cost = cost
-        self.amount = amountEntered
-        return cost, amountEntered
 
-    def checkTransaction(self, cost, amountEntered):
-        if cost > amountEntered:
-            return False
-        else:
-            return True
-
-    def transactionStatus(self, status):
-        """
-        if status is false, then cost is greater the amount entered
-        """
-        if status:
-            self.printDocument(Printer)
-        else:
-            return input("Insufficient Fund. Would like to add more fund? y/n   ")
     
-    def addFund(self, status):
-        while status == False:
-            self.coin = input(f"Please Insert More coins... (Penny, Nickel, Dime, or Quarter) - remaining ${self.cost - self.amount}: ")
-            self.number = int(input("Enter Number of coins: "))
-            self.amount += coins[self.coin] * self.number
-            status = Printer.checkTransaction(Printer, self.cost, self.amount)
-        else:
-            self.printDocument(Printer)
-        
+    def off(self):
+        print("TURNING OFF...")
+        time.sleep(1)
+        self.power = False
+        print("BYE..")
 
-    def balance(amountEntered, cost):
-        balance = amountEntered - cost
-        return f"Here is ${balance} in change"
+    def report(self):
+        report = f"Paper: {self.paper} Pc \nInk: {self.ink} ml \nProfit: ${self.profit}"
+        print(report)
 
     def checkAvailableResources(self, mode, pages):
-        """
-            - Check if there is sufficient amount of ink and paper
-            - if not raise error
-        """
         available_ink = self.ink
         avalaible_paper = self.paper
-        self.ink_consumable = FORMAT[mode]['materials']['ink'] * pages
+        ink = FORMAT[self.mode]['materials']['ink']
 
-        if self.ink_consumable > available_ink:
-            print("Insufficient Ink")
-        elif pages > avalaible_paper:
-            ("Insufficient Paper")
+        self.ink_consumable = ink * pages
+
+        if pages > avalaible_paper:
+            print ("Insufficient Paper")
+
+        elif self.ink_consumable > available_ink:
+            print ("Insufficient Ink")
+
         else:
             return True
+    
+
+    def printDocument(self):
+        "Printing Document ... "
+        time.sleep(1)
+        print("-----------------")
+        print("REPORT -- BEFORE")
+        report = self.report()
+        print(report)
+
+        print("-----------------")
+        self.processDocument()
+        self.printing()
+
+        print("-----------------")
+        print("REPORT -- AFTER")
+        report = self.report()
+        print(report)
+        
+        if self.amount > self.cost:
+            balance = self.check_balance(self.amount, self.cost)
+            print(balance)
+        
+        self.exitMsg()
+
+    def processDocument(self):
+        self.ink -= self.ink_consumable 
+        self.paper -= self.pages
+        self.profit += self.cost
+
         
     def printing(self):
-        time.sleep(1)
         pages = self.pages
+        printed = pages
         while pages:
-            timeformat = '{}'.format(pages)
+            timeformat = '{:2d}'.format(pages)
             print("\tPrinting... ", timeformat, end='\r')
             time.sleep(0.2)
             pages -= 1
-            
-    def increaseProfit(self, price: int) -> int:
-        self.profit += price
-    
-    def generateReport(self) -> str:
-        report = f"Paper: {self.paper} \nInk: {self.ink} \nProfit: {self.profit}"
-        return report
-    
+        print(f"\n{printed} pages Printed")
+
+    def check_balance(self, amount, cost):
+        return f"Here is ${amount - cost} in change"
+
     def exitMsg(self):
-        return "Here is your report. Thank you for using our services"
+        return "\nHere is your report. Thank you for using our services"
 
-    def exit(self):
-        print("Exiting... ")
-        time.sleep(1)
-        return "Printing Aborted"
+class Cost(Printer):
+    
+    def displayCost(self):
+        """
+            - displays the printing cost
+        """
+        price = self.price = FORMAT[self.mode]['price']
+        cost =  price * self.pages
+        print(f" \n\t    MODE: {self.mode}  \n\t    PAGES: {self.pages} \n\t    COST: ${cost}")
+    
+    def add_fund(self):
+        valid = False
+        while not valid:
+            self.coin = input(f"remaining ${self.cost - self.amount}, Please Insert More coins... (Penny, Nickel, Dime, or Quarter): ")
+            self.number = int(input("Enter Number of coins: "))
+            self.amount += coins[self.coin] * self.number
+            if self.amount >= self.cost:
+                valid = True
+        else:
+            self.printDocument()
+        
+    def check_balance(self, amountEntered, cost):
+        balance = amountEntered - cost
+        if balance:
+            return f"Here is ${balance} in change"
+    
+    def estimate_profit(self, price: int) -> int:
+        self.profit += price
+        
+    def processPrice(self) -> int:
+        self.cost = FORMAT[self.mode]['price'] * self.pages
+        self.amount = coins[self.coin] * self.number
+        return self.cost, self.amount
 
-class InsufficientResourcesException(Exception):
-    pass
+    def checkTransaction(self, cost, amountEntered):
+        if amountEntered >= cost:
+            self.printDocument()
+        else:
+            return input(f"Insufficient Fund: ${self.amount}. Would like to add more fund? y/n   ")
+
+
+
+class Print(Cost):
+    def requestUserInput(self):
+        response = input("What format would you like? greyscale or coloured: ")
+        return response
+    
+    def processResponse(self, response):
+        self.mode = response
+        self.pages = int(input("How many pages would like to print: "))
+
+        # check if there are enough ink and paper
+        isResourceAvailable = self.checkAvailableResources(self.mode, self.pages)
+        if isResourceAvailable:
+            self.displayCost()
+            response = input("Proceed? y/n  ")
+            if response == 'y':
+                coin = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter): ")
+                self.coin = coin.lower()
+                self.number = int(input("Enter Number of coins: "))
+
+                #: check if fund entered by user is sufficient
+                #: if it is, print document -> called in checkTransaction method
+
+                cost, amountEntered = self.processPrice()
+                response = self.checkTransaction(cost, amountEntered)
+        
+                if response == 'y':
+
+                    self.add_fund()
+                
+                else:
+                    self.requestUserInput()
+            else:
+                self.requestUserInput()
+               
+
+
+
+
