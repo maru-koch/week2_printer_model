@@ -68,7 +68,8 @@ class Printer():
             balance = self.check_balance(self.amount, self.cost)
             print(balance)
         
-        self.exitMsg()
+        thanks = self.exitMsg()
+        print(thanks)
 
     def processDocument(self):
         self.ink -= self.ink_consumable 
@@ -79,18 +80,20 @@ class Printer():
     def printing(self):
         pages = self.pages
         printed = pages
+        i = 1
         while pages:
             timeformat = '{:2d}'.format(pages)
-            print("\tPrinting... ", timeformat, end='\r')
+            print("|"*i, "\tPrinting... ", timeformat, end='\r')
             time.sleep(0.2)
             pages -= 1
+            i += 1
         print(f"\n{printed} pages Printed")
 
     def check_balance(self, amount, cost):
         return f"Here is ${amount - cost} in change"
 
     def exitMsg(self):
-        return "\nHere is your report. Thank you for using our services"
+        return "\nHere is your Project. Thank you for using our services\n"
 
 class Cost(Printer):
     
@@ -141,7 +144,7 @@ class Print(Cost):
     
     def processResponse(self, response):
         self.mode = response
-        self.pages = int(input("How many pages would like to print: "))
+        self.pages = int(input("How many pages would you like to print: "))
 
         # check if there are enough ink and paper
         isResourceAvailable = self.checkAvailableResources(self.mode, self.pages)
