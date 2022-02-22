@@ -106,13 +106,21 @@ class Cost(Printer):
         print(f" \n\t    MODE: {self.mode}  \n\t    PAGES: {self.pages} \n\t    COST: ${cost}")
     
     def add_fund(self):
-        valid = False
-        while not valid:
-            self.coin = input(f"remaining ${self.cost - self.amount}, Please Insert More coins... (Penny, Nickel, Dime, or Quarter): ")
-            self.number = int(input("Enter Number of coins: "))
+        response = ''
+        while self.cost > self.amount:
+            response = input(f"remaining ${self.cost - self.amount}, Please Insert More coins... (Penny, Nickel, Dime, or Quarter): ")
+            while response not in ['penny', 'dime', 'nickel', 'quarter']:
+                print(f"{response} is not a valid coin.")
+                response = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter) or 'off' to power off: ")
+                if response == 'off':
+                    self.off()
+            self.coin = response
+            number = int(input("Enter Number of coins: "))
+            while type(number) != int:
+                print("Heads up..! Only numbers are accepted")
+                response = int(input("Enter number of coins: "))
+            self.number = number
             self.amount += coins[self.coin] * self.number
-            if self.amount >= self.cost:
-                valid = True
         else:
             self.printDocument()
         
@@ -125,7 +133,8 @@ class Cost(Printer):
         self.profit += price
         
     def processPrice(self) -> int:
-        self.cost = FORMAT[self.mode]['price'] * self.pages
+        price = FORMAT[self.mode]['price']
+        self.cost = price * self.pages
         self.amount = coins[self.coin] * self.number
         return self.cost, self.amount
 
@@ -133,16 +142,17 @@ class Cost(Printer):
         if amountEntered >= cost:
             self.printDocument()
         else:
-            return input(f"Insufficient Fund: ${self.amount}. Would like to add more fund? y/n   ")
+            return input(f"Insufficient Fund: ${self.amount}. Would you like to add more fund? y/n   ")
 
 
 
-class Print(Cost):
+class Operations(Cost):
     def requestUserInput(self):
         response = input("What format would you like? greyscale or coloured: ")
         return response
     
     def processResponse(self, response):
+        
         self.mode = response
         self.pages = int(input("How many pages would you like to print: "))
 
@@ -151,26 +161,39 @@ class Print(Cost):
         if isResourceAvailable:
             self.displayCost()
             response = input("Proceed? y/n  ")
-            if response == 'y':
-                coin = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter): ")
-                self.coin = coin.lower()
-                self.number = int(input("Enter Number of coins: "))
+            while response not in ['y', 'n']:
+                response = input("Unknow option. enter 'y' to proceed and 'n' to abort: ")
 
+            if response == 'y':
+                response = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter): ").lower()
+                while response not in ['penny', 'dime', 'nickel', 'quarter']:
+                    print(f"{response} is not a valid coin.")
+                    response = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter): ")
+                    if response == 'off':
+                        self.off()
+                        break
+                self.coin = response
+                number = int(input("Enter number of coins: "))
+                while type(number) != int:
+                    print("Only numbers are accepted")
+                    number = int(input("Enter number of coins: "))
+                self.number = number
                 #: check if fund entered by user is sufficient
                 #: if it is, print document -> called in checkTransaction method
-
                 cost, amountEntered = self.processPrice()
                 response = self.checkTransaction(cost, amountEntered)
-        
+    
                 if response == 'y':
-
                     self.add_fund()
                 
                 else:
                     self.requestUserInput()
             else:
                 self.requestUserInput()
-               
+    
+
+
+            
 
 
 

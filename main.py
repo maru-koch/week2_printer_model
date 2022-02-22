@@ -1,10 +1,9 @@
 # The entry point of your application
 from data.data import FORMAT, resources, coins
 from assets.art import logo
-from modules.printer import Print
+from modules.printer import Operations
 
-
-class Main(Print):
+class Printer(Operations):
     options =['greyscale', 'coloured']
     def start(self):
         print(logo)
@@ -13,7 +12,6 @@ class Main(Print):
                 response = self.requestUserInput()
                 if response == 'off':
                     self.off()
-    
                 elif response == 'report':
                     self.report()
                 elif response in self.options:
@@ -24,7 +22,6 @@ class Main(Print):
                 print("Unkown Value")
             finally:
                 pass
-
     
 if __name__== "__main__" :
 
@@ -32,5 +29,5 @@ if __name__== "__main__" :
     paper = resources['paper']
     profit = resources['profit']
 
-    DecaPrinter = Main(paper, ink, profit)
+    DecaPrinter = Printer(paper, ink, profit)
     DecaPrinter.start()
