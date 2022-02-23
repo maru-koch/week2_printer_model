@@ -18,7 +18,9 @@ class Printer():
         self.ink_consumable = 0
         self.cost = 0
 
-
+    def requestUserInput(self):
+        response = input("What format would you like? greyscale or coloured: ")
+        return response
     
     def off(self):
         print("TURNING OFF...")
@@ -27,8 +29,8 @@ class Printer():
         print("BYE..")
 
     def report(self):
-        report = f"Paper: {self.paper} Pc \nInk: {self.ink} ml \nProfit: ${self.profit}"
-        print(report)
+        report = f"Paper: {self.paper} Pc \nInk: {self.ink} ml \nProfit: ${self.profit}\n"
+        return report
 
     def checkAvailableResources(self, mode, pages):
         available_ink = self.ink
@@ -50,16 +52,16 @@ class Printer():
     def printDocument(self):
         "Printing Document ... "
         time.sleep(1)
-        print("-----------------")
+        print("\n-----------------")
         print("REPORT -- BEFORE")
         report = self.report()
         print(report)
 
-        print("-----------------")
+        print("\n-----------------")
         self.processDocument()
         self.printing()
 
-        print("-----------------")
+        print("\n-----------------")
         print("REPORT -- AFTER")
         report = self.report()
         print(report)
@@ -90,7 +92,7 @@ class Printer():
         print(f"\n{printed} pages Printed")
 
     def check_balance(self, amount, cost):
-        return f"Here is ${amount - cost} in change"
+        return f"\nHere is ${amount - cost} in change"
 
     def exitMsg(self):
         return "\nHere is your Project. Thank you for using our services\n"
@@ -111,9 +113,12 @@ class Cost(Printer):
             response = input(f"remaining ${self.cost - self.amount}, Please Insert More coins... (Penny, Nickel, Dime, or Quarter): ")
             while response not in ['penny', 'dime', 'nickel', 'quarter']:
                 print(f"{response} is not a valid coin.")
-                response = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter) or 'off' to power off: ")
-                if response == 'off':
-                    self.off()
+                response = input("Please Insert coin... (Penny, Nickel, Dime, or Quarter) or 'exit' to abort: ")
+                if response == 'exit':
+                    print("Printing aborted...")
+                    time.sleep(1)
+                    break
+            
             self.coin = response
             number = int(input("Enter Number of coins: "))
             while type(number) != int:
@@ -146,13 +151,9 @@ class Cost(Printer):
 
 
 
-class Operations(Cost):
-    def requestUserInput(self):
-        response = input("What format would you like? greyscale or coloured: ")
-        return response
-    
+class Operations(Cost):  
+
     def processResponse(self, response):
-        
         self.mode = response
         self.pages = int(input("How many pages would you like to print: "))
 
